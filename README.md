@@ -13,9 +13,9 @@ elementos tales como script, archivos de salida, entre otros. ✔
 
 Características del Script:
 * Debe utilizar como base todo el código entregado junto con esta actividad. ✔
-*. Nombre del archivo debe ser: “analisis_web.sh” ✔
-*. Permisos del archivo script: “755” o “rwxr-xr-x” ✔ (verificar)
-*. Separar todos los datos sensibles (como credenciales, tokens, contraseñas, etc)
+* Nombre del archivo debe ser: “analisis_web.sh” ✔
+* Permisos del archivo script: “755” o “rwxr-xr-x” ✔ (verificar)
+* Separar todos los datos sensibles (como credenciales, tokens, contraseñas, etc)
 en un archivo anexo al script:
 + Nombre de archivo: “credenciales.dat” ✔ 
 + Permisos del archivo: “600” o “rw-------“ ✔ (verificar)
