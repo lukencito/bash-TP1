@@ -46,7 +46,7 @@ agregado. ✘
 + Cree una función llamada “leer_log_errores” que lea el registro de STDERR. ✘
 +  Debe mostrar el registro solo si existe el log, si no existe debe mostrar un ✘
 
-# RECAUCIONES:
+# PRECAUCIONES:
 * Debe utilizar todas las buenas prácticas para escribir el código del script, como
 por ejemplo el manejo de arreglos para variables con varios datos, uso de ciclos,
 uso de condiciones if else, manejo de STDOUT y STDERR, entre otros.
