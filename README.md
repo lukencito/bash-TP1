@@ -5,6 +5,7 @@ Crear tu archivo **credenciales.dat**:
 
 ```bash
 touch 'API_TOKEN="<token-URLScan.io>"' > credenciales.dat
+chmod 600 credenciales.dat
 ```
 
 ## Lista de tareas:
