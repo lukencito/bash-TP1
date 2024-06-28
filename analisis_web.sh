@@ -168,3 +168,19 @@ done
 
 
 
+leer_log_errores(){
+  local archivo="$1"
+
+  if [ -e "$archivo" ]; then
+echo "Contenido del archivo de log de errores: "$archivo" es: "
+echo " "
+        cat STDERR.log
+else
+        echo "El archivo de log de errores "$archivo" no existe."
+fi   
+
+}
+
+#llamamos la funcion
+leer_log_errores "STDERR.log"
+
