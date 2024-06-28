@@ -41,11 +41,11 @@ menú de opciones. ✔
 + Se debe detectar si se ingresó una opción diferente a las que creó en el
 menú. ✔
 * Redirigir todos los STDOUT a “STDOUT.log” y STDERR a “STDERR.log” a
-nivel de función, utilizando la redirección dentro de la definición de cada función. ✘
+nivel de función, utilizando la redirección dentro de la definición de cada función. ✔
 + También aplicar a todos los mensajes de usuario que estén o haya
 agregado. ✘
-+ Cree una función llamada “leer_log_errores” que lea el registro de STDERR. ✘
-+  Debe mostrar el registro solo si existe el log, si no existe debe mostrar un ✘
++ Cree una función llamada “leer_log_errores” que lea el registro de STDERR. ✔
++  Debe mostrar el registro solo si existe el log, si no existe debe mostrar un ✔
 
 # PRECAUCIONES:
 * Debe utilizar todas las buenas prácticas para escribir el código del script, como
