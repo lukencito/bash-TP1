@@ -22,7 +22,7 @@ function ctrl_c(){
 API_KEY=$(cat credenciales.dat | grep API_TOKEN | awk -F '=' '{print $2}'| tr -d '"')
 
 # Definir las variables para cada sitio web en un arreglo
-sitios=("irsi.education")
+sitios=("irsi.education" "n")
 
 # Declarar un arreglo asociativo para almacenar los UUIDs de URLScan.io asociados a cada sitio
 declare -A uuid_por_sitio
@@ -38,7 +38,7 @@ mostrar_sitios() {
 analizar_con_wafw00f(){
   for sitio in "${sitios[@]}"; do 
     echo -e "[${greenColour}+${endColour}] Analizando el sitio $sitio con ${yellowColour}wafw00f${endColour}..." 
-    wafw00f $sitio
+    wafw00f $sitio >> STDOUT.log 2> STDERR.log
   done
 }
 
@@ -46,7 +46,7 @@ analizar_con_wafw00f(){
 analizar_con_nmap() {
     for sitio in "${sitios[@]}"; do
         echo -e "[${greenColour}+${endColour}] Analizando puertos abiertos en $sitio con ${yellowColour}nmap${endColour}..."
-        nmap -Pn $sitio
+        nmap -Pn $sitio >> STDOUT.log 2> STDERR.log
     done
 }
 
@@ -58,16 +58,28 @@ enviar_a_urlscan() {
         --header "Content-Type: application/json" \
         --header "API-Key: $API_KEY" \
         --data "{\"url\": \"$sitio\", \"customagent\": \"US\"}")
-        uuid=$(echo $response | jq -r '.uuid')
+        uuid=$(echo $response | jq -r '.uuid') 
         if [ "$uuid" != "null" ]; then
             echo -e "[${greenColour}+${endColour}] UUID de URLScan.io para ${yellowColour}$sitio${endColour}: ${greenColour}$uuid${endColour}"
             uuid_por_sitio["$sitio"]=$uuid
         else
-            echo "Error al enviar $sitio a URLScan.io. Respuesta: $response"
+            echo "Error al enviar $sitio a URLScan.io. Respuesta: $response" >> STDERR.log 2> STDERR.log 
         fi
     done
 }
 
+leer_log_errores(){
+  local archivo="./STDERR.log"
+
+  if [ -e "$archivo" ]; then
+    echo "[+] Contenido del archivo de log de errores: "$archivo" es: "
+    echo " "
+    cat "$archivo"
+  else
+    echo "[!] El archivo de log de errores "$archivo" no existe."
+  fi   
+
+}
 
 # Función para obtener resultados de URLScan.io
 obtener_resultados_urlscan() {
@@ -76,7 +88,7 @@ obtener_resultados_urlscan() {
         echo -e "[${greenColour}+${endColour}] Obteniendo resultados de URLScan.io para $sitio (UUID: $uuid)..."
         response=$(curl -s --request GET --url "https://urlscan.io/api/v1/result/$uuid/" \
         --header "API-Key: $API_KEY")
-        echo "$response " | jq
+        echo "$response " | jq >> STDOUT.log 2> STDERR.log
     done
 }
 
@@ -99,7 +111,7 @@ validar_dependencias() {
                 sudo apt-get update && sudo apt-get install -y $dep
                 echo -e "[${greenColour}✔${endColour}] $dep ha sido instalado correctamente."
             else
-                echo -e "[${redColour}✗${endColour}] No se instalará ${yellowColour}$dep${endColour} y es necesario para ejecutar el script. Saliendo..."
+                echo -e "[${redColour}✗${endColour}] No se instalará ${yellowColour}$dep${endColour} y es necesario para ejecutar el script. Saliendo..." 2> STDERR.log
                 exit 1
             fi
         fi
@@ -118,7 +130,8 @@ while true; do
   echo -e "${greenColour}3.${endColour} Analizar sitio con ${yellowColour}wafw00f${endColour}"
   echo -e "${greenColour}4.${endColour} Enviar sitio a ${yellowColour}URLScan.io${endColour}"
   echo -e "${greenColour}5.${endColour} Mostrar resultados de ${yellowColour}URLScan.io${endColour}"
-  echo -e "${greenColour}6.${endColour} ${redColour}Salir${endColour}"
+  echo -e "${greenColour}6.${endColour} Leer ${yellowColour}archivo de errores${endColour}"
+  echo -e "${greenColour}7.${endColour} ${redColour}Salir${endColour}"
   echo 
   echo -e "${redColour}>>${endColour} Ingresar opción: "; read option
 
@@ -149,9 +162,15 @@ while true; do
       echo 
       ;;
     6)
+      echo 
+      #llamamos la funcion
+      leer_log_errores 
+      echo 
+      ;;
+    7)
       echo
       echo
-      echo -e"[${redColour}!${endColour}] Saliendo..."
+      echo -e "[${redColour}!${endColour}] Saliendo..."
       break
       ;;
     *)
@@ -168,19 +187,6 @@ done
 
 
 
-leer_log_errores(){
-  local archivo="$1"
 
-  if [ -e "$archivo" ]; then
-echo "Contenido del archivo de log de errores: "$archivo" es: "
-echo " "
-        cat STDERR.log
-else
-        echo "El archivo de log de errores "$archivo" no existe."
-fi   
 
-}
-
-#llamamos la funcion
-leer_log_errores "STDERR.log"
 
