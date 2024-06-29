@@ -29,43 +29,64 @@ declare -A uuid_por_sitio
 
 # Función para mostrar los sitios web
 mostrar_sitios() {
+  {
     for sitio in "${sitios[@]}"; do
-        echo -e "[${yellowColour}!${endColour}] Sitio web: ${blueColour}$sitio${endColour}"
+      echo -e "[${yellowColour}!${endColour}] Sitio web: ${blueColour}$sitio${endColour}"
     done
+  } >> STDOUT.log 2>> STDERR.log
+
+  echo "Hora de ejeución: [$(date +'%Y-%m-%d %H:%M:%S')] $1" >> STDOUT.log 2>> STDERR.log
+  read -p "Listo! Tus resultados estan en el archivo STDOUT.log. Presiona 'Enter' para regresar al menú principal "
 }
 
 # Función para analizar con wafw00f
 analizar_con_wafw00f(){
-  for sitio in "${sitios[@]}"; do 
-    echo -e "[${greenColour}+${endColour}] Analizando el sitio $sitio con ${yellowColour}wafw00f${endColour}..." 
-    wafw00f $sitio >> STDOUT.log 2> STDERR.log
-  done
+  {
+    for sitio in "${sitios[@]}"; do 
+      echo -e "[${greenColour}+${endColour}] Analizando el sitio $sitio con ${yellowColour}wafw00f${endColour}..." 
+      wafw00f $sitio 
+    done
+  } >> STDOUT.log 2>> STDERR.log
+
+  echo "Hora de ejeución: [$(date +'%Y-%m-%d %H:%M:%S')] $1" >> STDOUT.log 2>> STDERR.log
+  read -p "Resultados guardados en el archivo STDOUT.log y STDERR.log en caso de haber presentado un problema. Presiona 'Enter' para regresar al menú principal "
 }
 
 # Función para analizar puertos abiertos con nmap
 analizar_con_nmap() {
+  {
     for sitio in "${sitios[@]}"; do
-        echo -e "[${greenColour}+${endColour}] Analizando puertos abiertos en $sitio con ${yellowColour}nmap${endColour}..."
-        nmap -Pn $sitio >> STDOUT.log 2> STDERR.log
+      echo -e "[${greenColour}+${endColour}] Analizando puertos abiertos en $sitio con ${yellowColour}nmap${endColour}..."
+      nmap -Pn $sitio 
     done
+  } >> STDOUT.log 2>> STDERR.log
+
+  echo "Hora de ejeución: [$(date +'%Y-%m-%d %H:%M:%S')] $1" >> STDOUT.log 2>> STDERR.log
+  read -p "Resultados guardados en el archivo STDOUT.log y STDERR.log en caso de haber presentado un problema. Presiona 'Enter' para regresar al menú principal "
 }
 
 # Función para enviar URLs a URLScan.io
 enviar_a_urlscan() {
-    for sitio in "${sitios[@]}"; do
-        echo -e "[${yellowColour}!${endColour}] Enviando $sitio a URLScan.io..."
-        response=$(curl -s --request POST --url 'https://urlscan.io/api/v1/scan/' \
-        --header "Content-Type: application/json" \
-        --header "API-Key: $API_KEY" \
-        --data "{\"url\": \"$sitio\", \"customagent\": \"US\"}")
-        uuid=$(echo $response | jq -r '.uuid') 
-        if [ "$uuid" != "null" ]; then
+    {
+      for sitio in "${sitios[@]}"; do
+          echo -e "[${yellowColour}!${endColour}] Enviando $sitio a URLScan.io..."
+          response=$(curl -s --request POST --url 'https://urlscan.io/api/v1/scan/' \
+          --header "Content-Type: application/json" \
+          --header "API-Key: $API_KEY" \
+          --data "{\"url\": \"$sitio\", \"customagent\": \"US\"}")
+          uuid=$(echo $response | jq -r '.uuid') 
+
+          if [ "$uuid" != "null" ]; then
             echo -e "[${greenColour}+${endColour}] UUID de URLScan.io para ${yellowColour}$sitio${endColour}: ${greenColour}$uuid${endColour}"
             uuid_por_sitio["$sitio"]=$uuid
-        else
-            echo "Error al enviar $sitio a URLScan.io. Respuesta: $response" >> STDERR.log 2> STDERR.log 
-        fi
-    done
+          else
+            echo "Error al enviar $sitio a URLScan.io. Respuesta: $response" 
+          fi
+      done
+    } >> STDOUT.log 2>> STDERR.log
+
+  echo "Hora de ejeución: [$(date +'%Y-%m-%d %H:%M:%S')] $1" >> STDOUT.log 2>> STDERR.log
+  read -p "Resultados guardados en el archivo STDOUT.log y STDERR.log en caso de haber presentado un problema. Presiona 'Enter' para regresar al menú principal "
 }
 
 leer_log_errores(){
@@ -83,13 +104,19 @@ leer_log_errores(){
 
 # Función para obtener resultados de URLScan.io
 obtener_resultados_urlscan() {
-    for sitio in "${!uuid_por_sitio[@]}"; do
+    {
+      for sitio in "${!uuid_por_sitio[@]}"; do
         uuid=${uuid_por_sitio[$sitio]}
         echo -e "[${greenColour}+${endColour}] Obteniendo resultados de URLScan.io para $sitio (UUID: $uuid)..."
         response=$(curl -s --request GET --url "https://urlscan.io/api/v1/result/$uuid/" \
         --header "API-Key: $API_KEY")
-        echo "$response " | jq >> STDOUT.log 2> STDERR.log
-    done
+
+        echo "$response " | jq 
+      done
+    } >> STDOUT.log 2>> STDERR.log
+
+  echo "Hora de ejeución: [$(date +'%Y-%m-%d %H:%M:%S')] $1" >> STDOUT.log 2>> STDERR.log
+  read -p "Resultados guardados en el archivo STDOUT.log y STDERR.log en caso de haber presentado un problema. Presiona 'Enter' para regresar al menú principal "
 }
 
 # Función para validar que las dependencias estén instaladas
@@ -99,26 +126,26 @@ validar_dependencias() {
     # Iterar sobre cada dependencia para verificar su instalación
     for dep in "${dependencias[@]}"; do
         if command -v "$dep" >/dev/null; then
-            echo -e "[${greenColour}✔${endColour}] ${yellowColour}$dep${endColour} instalado en ${blueColour}$(which $dep)${endColour}"
+          echo -e "[${greenColour}✔${endColour}] ${yellowColour}$dep${endColour} instalado en ${blueColour}$(which $dep)${endColour}"
         else
-            echo -e "[${redColour}✗${endColour}] No tienes ${yellowColour}$dep${endColour}."
-            echo -e "[${purpleColour}?${endColour}] ¿Deseas instalar ${yellowColour}$dep${endColour}? (s/n): " 
-            read instalar
+          echo -e "[${redColour}✗${endColour}] No tienes ${yellowColour}$dep${endColour}."
+          echo -e "[${purpleColour}?${endColour}] ¿Deseas instalar ${yellowColour}$dep${endColour}? (s/n): " 
+          read instalar
 
-            if [[ "$instalar" == "s" || "$instalar" == "S" ]]; then
-                # Instalar la dependencia
-                echo -e "[${yellowColour}!${endColour}] Instalando $dep..."
-                sudo apt-get update && sudo apt-get install -y $dep
-                echo -e "[${greenColour}✔${endColour}] $dep ha sido instalado correctamente."
-            else
-                echo -e "[${redColour}✗${endColour}] No se instalará ${yellowColour}$dep${endColour} y es necesario para ejecutar el script. Saliendo..." 2> STDERR.log
-                exit 1
-            fi
+          if [[ "$instalar" == "s" || "$instalar" == "S" ]]; then
+            # Instalar la dependencia
+            echo -e "[${yellowColour}!${endColour}] Instalando $dep..." >> STDOUT.log 2>> STDERR.log
+            sudo apt-get update && sudo apt-get install -y $dep
+            echo -e "[${greenColour}✔${endColour}] $dep ha sido instalado correctamente." >> STDOUT.log 2>> STDERR.log
+          else
+            echo -e "[${redColour}✗${endColour}] No se instalará ${yellowColour}$dep${endColour} y es necesario para ejecutar el script. Saliendo..." >> STDOUT.log 2>> STDERR.log 
+            exit 1
+          fi
         fi
-    done
+    done 
 }
 
-validar_dependencias
+validar_dependencias 
 
 while true; do
   echo -e "${yellowColour}---------------------------------------------${endColour}"
