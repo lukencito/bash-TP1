@@ -147,11 +147,16 @@ validar_dependencias() {
 
 validar_dependencias 
 
+#Bucle infinito que mantiene el menú en pantalla hasta que el usuario elija salir
 while true; do
+#Imprime una línea en color amarillo (decoracion)
   echo -e "${yellowColour}---------------------------------------------${endColour}"
+  #Imprime el título del menú en color amarillo
   echo -e "${yellowColour}|${endColour}                   TP1 Bash                ${yellowColour}|${endColour}"
+  #Imprime otra línea en color amarillo (decoracion)
   echo -e "${yellowColour}---------------------------------------------${endColour}"
   echo 
+  #Imprime las opciones del menú en colores
   echo -e "${greenColour}1.${endColour} Mostrar sitios"
   echo -e "${greenColour}2.${endColour} Analizar sitio con ${yellowColour}nmap${endColour}"
   echo -e "${greenColour}3.${endColour} Analizar sitio con ${yellowColour}wafw00f${endColour}"
@@ -160,48 +165,57 @@ while true; do
   echo -e "${greenColour}6.${endColour} Leer ${yellowColour}archivo de errores${endColour}"
   echo -e "${greenColour}7.${endColour} ${redColour}Salir${endColour}"
   echo 
+  #Solicita al usuario ingresar una opción
   echo -e "${redColour}>>${endColour} Ingresar opción: "; read option
 
+#Ejecuta la acción seleccionada por el usuario
   case $option in 
     1)
       echo 
+      #Llama la función Mostrar Sitios
       mostrar_sitios
       echo 
       ;;
     2)
       echo
+      #Llama la funcion Analizar con nmap
       analizar_con_nmap
       echo
       ;;
     3)
       echo
+      #Llama la función Analizar con Wafw00f
       analizar_con_wafw00f
       echo
       ;;
     4)
       echo 
+      #Llama la funcion Enviar a URLScan
       enviar_a_urlscan
       echo 
       ;;
     5)
       echo 
+      #Llama la funcion Obtener Resultados URLScan
       obtener_resultados_urlscan
       echo 
       ;;
     6)
       echo 
-      #llamamos la funcion
+      #Llama la funcion para Leer logs de errores
       leer_log_errores 
       echo 
       ;;
     7)
       echo
       echo
+      #Imprime un mensaje indicando que está saliendo del script
       echo -e "[${redColour}!${endColour}] Saliendo..."
       break
       ;;
     *)
       echo
+      #Imprime un mensaje indicando que la opción ingresada no es válida e indica que seleccione una valida
       echo -e "[${redColour}!${endColour}] Opción no válida. Por favor, ingrese una de las opciones especificadas."
       ;;
   esac 
