@@ -20,7 +20,8 @@ function ctrl_c() {
 }
 
 # Obtención de la API KEY de URLScan.io desde el archivo credenciales.dat
-API_KEY=$(grep API_TOKEN credenciales.dat | awk -F '=' '{print $2}' | tr -d '"')
+# Definir API_KEY="API_KEY" en credenciales.dat
+API_KEY=$(grep API_KEY credenciales.dat | awk -F '=' '{print $2}' | tr -d '"')
 
 # Definir las variables para cada sitio web en un arreglo
 sitios=("irsi.education" "n")
@@ -41,8 +42,9 @@ analizar_con_wafw00f() {
 		echo -e "[${greenColour}+${endColour}] Analizando el sitio $sitio con ${yellowColour}wafw00f${endColour}..."
 		wafw00f $sitio | tee -a STDOUT.log
 	done 2>>STDERR.log
-	echo "Hora de ejecución: [$(date +'%Y-%m-%d %H:%M:%S')]" | tee -a STDOUT.log >>STDERR.log
-	read -p "Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	echo -e "[${greenColour}+${endColour}] Hora de ejecución: ${yellowColour}[$(date +'%Y-%m-%d %H:%M:%S')]${endColour}" | tee -a STDOUT.log >>STDERR.log
+	printf "[${greenColour}+${endColour}] Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	read -r
 }
 
 # Función para analizar con nmap
@@ -51,8 +53,9 @@ analizar_con_nmap() {
 		echo -e "[${greenColour}+${endColour}] Analizando puertos abiertos en $sitio con ${yellowColour}nmap${endColour}..."
 		nmap -Pn $sitio | tee -a STDOUT.log
 	done 2>>STDERR.log
-	echo "Hora de ejecución: [$(date +'%Y-%m-%d %H:%M:%S')]" | tee -a STDOUT.log >>STDERR.log
-	read -p "Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	echo -e "[${greenColour}+${endColour}] Hora de ejecución: ${yellowColour}[$(date +'%Y-%m-%d %H:%M:%S')]${endColour}" | tee -a STDOUT.log >>STDERR.log
+	printf "[${greenColour}+${endColour}] Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	read -r
 }
 
 # Función para leer el log de errores
@@ -60,11 +63,11 @@ leer_log_errores() {
 	local archivo="./STDERR.log"
 
 	if [ -e "$archivo" ]; then
-		echo "[+] Contenido del archivo de log de errores: $archivo es: "
+		echo -e "[${greenColour}+${endColour}] Contenido del archivo de log de errores: ${greenColour}$archivo${endColour} es: "
 		echo " "
 		cat "$archivo"
 	else
-		echo "[!] El archivo de log de errores $archivo no existe."
+		echo -e "[${redColour}!${endColour}] El archivo de log de errores ${redColour}$archivo${endColour} no existe."
 	fi
 }
 
@@ -83,13 +86,14 @@ enviar_a_urlscan() {
 				echo -e "[${greenColour}+${endColour}] UUID de URLScan.io para ${yellowColour}$sitio${endColour}: ${greenColour}$uuid${endColour}"
 				uuid_por_sitio["$sitio"]=$uuid
 			else
-				echo "Error al enviar $sitio a URLScan.io. Respuesta: $response"
+				echo -e "[${redColour}!${endColour}] Error al enviar ${yellowColour}$sitio${endColour} a URLScan.io. Respuesta: ${redColour}$response${endColour}"
 			fi
 		done
 	} > >(tee -a STDOUT.log) 2>>STDERR.log
 
-	echo "Hora de ejecución: [$(date +'%Y-%m-%d %H:%M:%S')] Enviar a URLScan.io" | tee -a STDOUT.log | tee -a STDERR.log
-	read -p "Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	echo -e "[${greenColour}+${endColour}] Hora de ejecución: ${yellowColour}[$(date +'%Y-%m-%d %H:%M:%S')]${endColour} Enviar a URLScan.io" | tee -a STDOUT.log | tee -a STDERR.log
+	printf "[${greenColour}+${endColour}] Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	read -r
 }
 
 obtener_resultados_urlscan() {
@@ -113,8 +117,9 @@ obtener_resultados_urlscan() {
 		done
 	} 2>>STDERR.log
 
-	echo "Hora de ejecución: [$(date +'%Y-%m-%d %H:%M:%S')] Obteniendo resultados de URLScan.io" | tee -a STDOUT.log | tee -a STDERR.log
-	read -p "Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	echo "[${greenColour}+${endColour}] Hora de ejecución: ${yellowColour}[$(date +'%Y-%m-%d %H:%M:%S')]${endColour} Obteniendo resultados de URLScan.io" | tee -a STDOUT.log | tee -a STDERR.log
+	printf "[${greenColour}+${endColour}] Resultados guardados en los archivos STDOUT.log y STDERR.log. Presiona 'Enter' para regresar al menú principal "
+	read -r
 }
 
 # Función para validar que las dependencias estén instaladas
